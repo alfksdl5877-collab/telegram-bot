@@ -20,6 +20,20 @@ if os.path.exists("auto-filter-bot.session"):
 app = Client("auto-filter-bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 BUTTONS = {}
 BOT = {}
+# 기존의 app = Client(...) 부분을 찾아서 아래 내용으로 교체하세요
+if os.path.exists("auto-filter-bot.session"):
+    try:
+        os.remove("auto-filter-bot.session")
+    except:
+        pass
+# 텔레그램 서버와 시간 동기화(재시도)를 위해 session을 비우고 시작
+app = Client(
+    "auto-filter-bot", 
+    api_id=API_ID, 
+    api_hash=API_HASH, 
+    bot_token=BOT_TOKEN,
+    workdir="."
+)
 
 def get_size(size):
     units = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB"]
