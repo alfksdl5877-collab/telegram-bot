@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#!/usr/bin/env python3
 import asyncio
 import sys
 import re
@@ -14,19 +15,14 @@ from plugins import get_filter_results, get_file_details, is_subscribed, get_pos
 if sys.platform == 'win32':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-if os.path.exists("auto-filter-bot.session"):
-    os.remove("auto-filter-bot.session")
-
-app = Client("auto-filter-bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
-BUTTONS = {}
-BOT = {}
-# 기존의 app = Client(...) 부분을 찾아서 아래 내용으로 교체하세요
+# 세션 파일 강제 정리
 if os.path.exists("auto-filter-bot.session"):
     try:
         os.remove("auto-filter-bot.session")
     except:
         pass
-# 텔레그램 서버와 시간 동기화(재시도)를 위해 session을 비우고 시작
+
+# 봇 클라이언트 설정 (workdir="." 설정이 세션 관리에 도움을 줍니다)
 app = Client(
     "auto-filter-bot", 
     api_id=API_ID, 
@@ -34,6 +30,9 @@ app = Client(
     bot_token=BOT_TOKEN,
     workdir="."
 )
+
+BUTTONS = {}
+BOT = {}
 
 def get_size(size):
     units = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB"]
@@ -55,9 +54,7 @@ async def filter(client, message):
         invite_link = await client.create_chat_invite_link(int(AUTH_CHANNEL))
         try:
             user = await client.get_chat_member(int(AUTH_CHANNEL), message.from_user.id)
-            if user.status == "kicked":
-                await client.send_message(chat_id=message.from_user.id, text="Sorry Sir, You are Banned to use me.", parse_mode="markdown", disable_web_page_preview=True)
-                return
+            if user.status == "kicked": return
         except UserNotParticipant:
             await client.send_message(chat_id=message.from_user.id, text="**Please Join My Updates Channel to use this Bot!**", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🤖 Join Updates Channel 📢", url=invite_link.invite_link)]]), parse_mode="markdown")
             return
@@ -73,8 +70,8 @@ async def filter(client, message):
             for file in files:
                 btn.append([InlineKeyboardButton(text=f"[{get_size(file.file_size)}] {file.file_name}",callback_data=f"zautekm#{file.file_id}")])
         else:
-            await client.send_sticker(chat_id=message.from_user.id, sticker='CAADBQADcAIAAgNqQVet7IusN5nq9hYE')
             return
+        
         if not btn: return
         if len(btn) > 10: 
             btns = list(split_list(btn, 10)) 
@@ -86,8 +83,8 @@ async def filter(client, message):
         else:
             buttons = btn
             buttons.append([InlineKeyboardButton(text="📃 Pages 1/1",callback_data="pages")])
-        poster=None
-        if API_KEY: poster=await get_poster(search)
+        
+        poster = await get_poster(search) if API_KEY else None
         if poster: await message.reply_photo(photo=poster, caption=zaute_km, reply_markup=InlineKeyboardMarkup(buttons))
         else: await message.reply_text(zaute_km, reply_markup=InlineKeyboardMarkup(buttons))
 
