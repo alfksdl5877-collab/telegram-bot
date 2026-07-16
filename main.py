@@ -219,7 +219,13 @@ ident, index, keyword = query.data.split("_")
             await query.answer()
     else:
         await query.answer("Isn't it a little more interesting? 👀",show_alert=True)
+# 수정 전 (현재 162줄 근처가 아마 이렇게 되어 있을 거예요)
+    if __name__ == "__main__":  # <-- 이 줄 앞에 띄어쓰기가 있으면 안 됩니다!
+        try:
+            print("🚀 봇을 시작합니다...")
+            app.run()
 
+# 수정 후 (왼쪽 끝에 딱 붙이세요)
 if __name__ == "__main__":
     try:
         print("🚀 봇을 시작합니다...")
