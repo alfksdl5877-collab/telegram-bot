@@ -12,7 +12,6 @@
 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 import os
 
 # 환경 변수에서 값 가져오기
@@ -22,7 +21,11 @@ BOT_TOKEN = os.environ.get('BOT_TOKEN', "")
 DATABASE_URI = os.environ.get('DATABASE_URI', "")
 DATABASE_NAME = os.environ.get('DATABASE_NAME', "BetterAutoFilterBot")
 
-# 에러를 일으키는 추가 변수들 (이걸 넣어줘야 합니다)
+# 이번에 에러가 발생한 DB_URL과 SESSION 추가
+DB_URL = os.environ.get('DATABASE_URI', DATABASE_URI) # 기존 DATABASE_URI를 사용
+SESSION = os.environ.get('SESSION', "AutoFilterBot")
+
+# 이전 단계에서 추가한 설정들
 COLLECTION_NAME = os.environ.get('COLLECTION_NAME', "Telegram_files")
 USE_CAPTION_FILTER = os.environ.get('USE_CAPTION_FILTER', "False") == "True"
 
