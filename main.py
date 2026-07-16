@@ -20,9 +20,12 @@ import random
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram.errors import UserNotParticipant
-from config import * from plugins import get_filter_results, get_file_details, is_subscribed, get_poster, RATING, GENRES, HELP, ABOUT
 
-# 이벤트 루프 설정
+# 줄을 나누어 작성해야 합니다!
+from config import *
+from plugins import get_filter_results, get_file_details, is_subscribed, get_poster, RATING, GENRES, HELP, ABOUT
+
+# (이후 기존의 @Client.on_message 함수들은 그대로 두시면 됩니다)
 if sys.platform == 'win32':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 loop = asyncio.get_event_loop()
