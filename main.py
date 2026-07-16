@@ -99,7 +99,9 @@ async def cb_handler(client, query):
 if __name__ == "__main__":
     try:
         print("🚀 봇을 시작합니다 (3초 대기)...")
-        time.sleep(3) # 서버 시스템 상태 안정화를 위한 3초 대기
+        time.sleep(3)
         app.run(main())
     except Exception as e:
-        # ... 이하 동일
+        print(f"❌ 봇 시작 중 치명적인 에러 발생: {e}")
+        traceback.print_exc()
+        time.sleep(60)
