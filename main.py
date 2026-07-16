@@ -13,6 +13,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import asyncio
+import sys
+
+# 이벤트 루프 생성 및 설정
+if sys.platform == 'win32':
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
+import asyncio
 try:
     loop = asyncio.get_event_loop()
 except RuntimeError:
