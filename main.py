@@ -158,3 +158,75 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 return
         elif query.data.startswith("back"):
             ident
+ident, index, keyword = query.data.split("_")
+            try:
+                data = BUTTONS[keyword]
+            except KeyError:
+                await query.answer("You are using this for one of my old message, please send the request again.",show_alert=True)
+                return
+
+            if int(index) == 1:
+                buttons = data['buttons'][int(index)-1].copy()
+                buttons.append([InlineKeyboardButton("NEXT ⏩", callback_data=f"next_{int(index)-1}_{keyword}")])
+                buttons.append([InlineKeyboardButton(f"📃 Pages {int(index)}/{data['total']}", callback_data="pages")])
+                await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(buttons))
+                return
+            else:
+                buttons = data['buttons'][int(index)-1].copy()
+                buttons.append([InlineKeyboardButton("⏪ BACK", callback_data=f"back_{int(index)-1}_{keyword}"),InlineKeyboardButton("NEXT ⏩", callback_data=f"next_{int(index)-1}_{keyword}")])
+                buttons.append([InlineKeyboardButton(f"📃 Pages {int(index)}/{data['total']}", callback_data="pages")])
+                await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(buttons))
+                return
+
+        elif query.data == "help":
+            buttons = [[InlineKeyboardButton('👨‍💻 Developer', url=f'{DEV_CHANNEL}'), InlineKeyboardButton('Channel 📢', url=f'https://t.me/TGBotsProJect')]]
+            await query.message.edit(text=f"{HELP}", reply_markup=InlineKeyboardMarkup(buttons), disable_web_page_preview=True)
+
+        elif query.data == "about":
+            buttons = [[InlineKeyboardButton('👨‍💻 Developer', url=f'{DEV_CHANNEL}'), InlineKeyboardButton('Channel 📢', url=f'https://t.me/TGBotsProJect')]]
+            await query.message.edit(text=f"{ABOUT}", reply_markup=InlineKeyboardMarkup(buttons), disable_web_page_preview=True)
+
+        elif query.data.startswith("zautekm"):
+            ident, file_id = query.data.split("#")
+            filedetails = await get_file_details(file_id)
+            for files in filedetails:
+                title, size, f_caption = files.file_name, files.file_size, files.caption
+                if CUSTOM_FILE_CAPTION:
+                    try: f_caption=CUSTOM_FILE_CAPTION.format(file_name=title, file_size=size, file_caption=f_caption)
+                    except: f_caption=f_caption
+                if f_caption is None: f_caption = f"{files.file_name}"
+                buttons = [[InlineKeyboardButton('👨‍💻 Developer', url=f'{DEV_CHANNEL}'), InlineKeyboardButton('Channel 📢', url=f'https://t.me/TGBotsProJect')]]
+                await query.answer()
+                await client.send_cached_media(chat_id=query.from_user.id, file_id=file_id, caption=f_caption, reply_markup=InlineKeyboardMarkup(buttons))
+
+        elif query.data.startswith("checksub"):
+            if AUTH_CHANNEL and not await is_subscribed(client, query):
+                await query.answer("I Like Your Smartness, But Don't Be Oversmart 😒",show_alert=True)
+                return
+            ident, file_id = query.data.split("#")
+            filedetails = await get_file_details(file_id)
+            for files in filedetails:
+                title, size, f_caption = files.file_name, files.file_size, files.caption
+                if CUSTOM_FILE_CAPTION:
+                    try: f_caption=CUSTOM_FILE_CAPTION.format(file_name=title, file_size=size, file_caption=f_caption)
+                    except: f_caption=f_caption
+                if f_caption is None: f_caption = f"{title}"
+                buttons = [[InlineKeyboardButton('👨‍💻 Developer', url=f'{DEV_CHANNEL}'), InlineKeyboardButton('Channel 📢', url=f'https://t.me/TGBotsProJect')]]
+                await query.answer()
+                await client.send_cached_media(chat_id=query.from_user.id, file_id=file_id, caption=f_caption, reply_markup=InlineKeyboardMarkup(buttons))
+
+        elif query.data == "pages":
+            await query.answer()
+    else:
+        await query.answer("Isn't it a little more interesting? 👀",show_alert=True)
+
+if __name__ == "__main__":
+    try:
+        print("🚀 봇을 시작합니다...")
+        app.run()
+    except Exception as e:
+        print(f"❌ 봇 시작 중 치명적인 에러 발생: {e}")
+        import traceback
+        traceback.print_exc()
+        import time
+        time.sleep(60)
