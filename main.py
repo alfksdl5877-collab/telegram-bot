@@ -142,7 +142,16 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.answer()
         # 생략된 부분은 기존 코드와 동일하게 붙여 넣으시면 됩니다.
     # ... 나머지 기존 cb_handler 로직 ...
+import os
 
+# 세션 파일이 있으면 삭제하여 시간 동기화 에러 방지
+if os.path.exists("auto-filter-bot.session"):
+    os.remove("auto-filter-bot.session")
+    print("🧹 기존 세션 파일을 삭제했습니다. 새로 연결을 시도합니다.")
+
+if __name__ == "__main__":
+    print("🚀 봇을 시작합니다...")
+    app.run()
 if __name__ == "__main__":
     print("🚀 봇을 시작합니다...")
     app.run()
