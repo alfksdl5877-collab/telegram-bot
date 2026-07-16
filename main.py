@@ -225,7 +225,6 @@ ident, index, keyword = query.data.split("_")
             print("🚀 봇을 시작합니다...")
             app.run()
 
-# 수정 후 (왼쪽 끝에 딱 붙이세요)
 if __name__ == "__main__":
     try:
         print("🚀 봇을 시작합니다...")
