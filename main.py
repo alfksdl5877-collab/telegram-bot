@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#!/usr/bin/env python3
 import asyncio
 import sys
 import os
@@ -7,17 +6,17 @@ import time
 import traceback
 from pyrogram import Client
 
-# 봇 설정
+# 봇 설정 로드
 from config import *
 
-# 기존 세션 강제 삭제
+# 1. 이전 세션 삭제 (매번 새로 연결)
 if os.path.exists("auto-filter-bot.session"):
     try:
         os.remove("auto-filter-bot.session")
     except:
         pass
 
-# 텔레그램 시간 오차 보정을 위해 session 파일 경로를 명확히 지정
+# 2. 클라이언트 설정
 app = Client(
     "auto-filter-bot", 
     api_id=API_ID, 
@@ -26,13 +25,19 @@ app = Client(
     workdir="."
 )
 
+# 3. 시간 동기화 에러 무시 설정 (핵심!)
+# Pyrogram의 세션 설정에서 시간 오차에 대한 허용 범위를 넓힙니다.
+from pyrogram.session import Session
+Session.MAX_TIMEOUT = 60 
+
 async def start_bot():
-    print("🚀 봇 연결 시도 중 (시간 동기화 대기)...")
-    # 텔레그램은 연결 시 봇의 시간을 자동으로 동기화합니다. 
-    # start()를 호출하면 서버와 시간 차이가 나더라도 
-    # 텔레그램이 '시간 차이가 나니 이 값을 사용하라'고 알려주는 정보를 처리합니다.
+    print("🚀 봇 연결을 시도합니다...")
+    # 텔레그램 서버에 연결하면서 시간 차이가 나면 
+    # 서버가 주는 시간값으로 즉시 동기화하도록 시도합니다.
     await app.start()
     print("✅ 봇이 성공적으로 연결되었습니다!")
+    
+    # 봇이 죽지 않게 유지
     from pyrogram import idle
     await idle()
 
@@ -41,8 +46,8 @@ if __name__ == "__main__":
         # 시간 오차 발생 시 재시도 루프
         asyncio.run(start_bot())
     except Exception as e:
-        print(f"❌ 에러 발생: {e}")
-        # 시간 문제일 경우 서버를 강제로 재시작하여 다른 인스턴스 할당 유도
-        print("💡 서버 시간 문제일 가능성이 높습니다. 1분 후 자동 재시작...")
+        print(f"❌ 치명적인 에러 발생: {e}")
+        traceback.print_exc()
+        # 1분 대기 후 종료 (Render가 다시 실행하도록)
         time.sleep(60)
         sys.exit(1)
