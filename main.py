@@ -148,7 +148,15 @@ import os
 if os.path.exists("auto-filter-bot.session"):
     os.remove("auto-filter-bot.session")
     print("🧹 기존 세션 파일을 삭제했습니다. 새로 연결을 시도합니다.")
+import os
+# 세션 파일 강제 삭제 (봇이 켜질 때마다 새로 로그인함)
+if os.path.exists("auto-filter-bot.session"):
+    os.remove("auto-filter-bot.session")
+    print("🧹 세션 파일 초기화 완료.")
 
+if __name__ == "__main__":
+    print("🚀 봇을 시작합니다...")
+    app.run()
 if __name__ == "__main__":
     print("🚀 봇을 시작합니다...")
     app.run()
